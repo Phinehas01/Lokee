@@ -17,7 +17,7 @@ class _MainNavigationState extends State<MainNavigation> {
   int currentIndex = 0;
 
   final List<Widget> pages = const [
-    Home(),
+    HomeScreen(),
     ChatScreen(),
     SearchScreen(),
     ProfileScreen(),

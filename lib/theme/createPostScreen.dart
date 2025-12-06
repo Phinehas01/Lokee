@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:lokee/models/postmodel.dart';
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key});
 
@@ -15,35 +15,31 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   File? selectedImage;
 
-  /// PICK IMAGE FUNCTION — retrieves camera/gallery image
   Future pickImage(ImageSource source) async {
     try {
       final XFile? file = await ImagePicker().pickImage(source: source);
 
       if (file == null) return;
 
-      setState(() {
-        selectedImage = File(file.path);
-      });
+      setState(() => selectedImage = File(file.path));
+
     } catch (e) {
-      print("IMAGE PICKER ERROR: $e");
+      print("IMAGE PICK ERROR: $e");
     }
   }
 
-  /// POST FUNCTION — Sends text & image back to HomeScreen
-  void handlePost() {
-    if (_textController.text.trim().isEmpty && selectedImage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please write something or add an image")),
-      );
-      return;
-    }
+  void submitPost() {
+    if (_textController.text.trim().isEmpty) return;
 
-    Navigator.pop(context, {
-      "text": _textController.text,
-      "tag": _tagController.text,
-      "image": selectedImage
-    });
+    final newPost = Post(
+      text: _textController.text.trim(),
+      tag: _tagController.text.trim().isEmpty ? null : _tagController.text.trim(),
+      image: selectedImage,
+      author: "Mary Johnson",
+      createdAt: DateTime.now(),
+    );
+
+    Navigator.pop(context, newPost);
   }
 
   @override
@@ -51,16 +47,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
 
-      /// APP BAR
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
         title: const Text(
           "Create Post",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black),
@@ -70,30 +62,27 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// USER HEADER
+
             Row(
-              children: [
-                const CircleAvatar(
+              children: const [
+                CircleAvatar(
                   radius: 25,
                   backgroundImage: AssetImage("lib/images/Mary (2).jpg"),
                 ),
-                const SizedBox(width: 10),
-                const Text(
-                  "Mary Johnson",
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                SizedBox(width: 10),
+                Text("Mary Johnson",
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ],
             ),
 
             const SizedBox(height: 20),
 
-            /// MAIN TEXTFIELD FOR POST
+            /// MAIN TEXT FIELD
             TextField(
               controller: _textController,
               maxLines: null,
@@ -103,51 +92,44 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none),
               ),
             ),
 
             const SizedBox(height: 20),
 
-            // --------------------------------------------------------
-            // 🔹 ADDED: HASHTAG FIELD
-            // --------------------------------------------------------
+            /// TAG INPUT (#)
             Row(
               children: [
-                /// SMALL BOX WITH #
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
-                    color: Colors.purple.shade100,
+                    color: Colors.purple,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Text(
                     "#",
                     style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.purple,
-                    ),
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
                   ),
                 ),
 
                 const SizedBox(width: 10),
 
-                /// MINI TEXTFIELD FOR TAGS
                 Expanded(
                   child: TextField(
                     controller: _tagController,
                     decoration: InputDecoration(
-                      hintText: "Add tag (optional)",
-                      filled: true,
+                      hintText: "Add a tag...",
                       fillColor: Colors.white,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                      filled: true,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none),
                     ),
                   ),
                 ),
@@ -156,26 +138,21 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
             const SizedBox(height: 20),
 
-            // --------------------------------------------------------
-            // 🔹 IMAGE PREVIEW (SMALL SIZE)
-            // --------------------------------------------------------
+            /// IMAGE PREVIEW
             if (selectedImage != null)
-              Container(
-                height: 140,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.purple.shade200),
-                  image: DecorationImage(
-                    image: FileImage(selectedImage!),
-                    fit: BoxFit.cover,
-                  ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: Image.file(
+                  selectedImage!,
+                  height: 160,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
                 ),
               ),
 
             const SizedBox(height: 20),
 
-            /// IMAGE PICKER BUTTONS
+            /// PICK IMAGE BUTTONS
             Row(
               children: [
                 Expanded(
@@ -184,54 +161,43 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     icon: const Icon(Icons.photo),
                     label: const Text("Gallery"),
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: const BorderSide(color: Colors.purple),
-                    ),
+                        side: const BorderSide(color: Colors.purple)),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => pickImage(ImageSource.camera),
                     icon: const Icon(Icons.camera_alt),
                     label: const Text("Camera"),
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: const BorderSide(color: Colors.purple),
-                    ),
+                        side: const BorderSide(color: Colors.purple)),
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
           ],
         ),
       ),
 
-      // --------------------------------------------------------
-      // 🔹 POST BUTTON
-      // --------------------------------------------------------
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SizedBox(
           height: 55,
           child: ElevatedButton(
-            onPressed: handlePost,
+            onPressed: submitPost,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.purple,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+                  borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text(
-              "Post",
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            child: const Text("Post",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
           ),
         ),
       ),
