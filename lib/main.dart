@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:lokee/pages/main_navigation.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
 
   runApp(const MyApp());
 }

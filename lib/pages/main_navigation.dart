@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'custom_navbar.dart';
 
 import 'home.dart';
-import 'search.dart';
+import 'notifications.dart';
 import 'chats.dart';
-import 'profile.dart';
+import 'profileScreen.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});

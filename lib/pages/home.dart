@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lokee/pages/feedslayout.dart';
+import 'package:lokee/theme/createPostScreen.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -8,6 +10,21 @@ class Home extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        backgroundColor: Colors.white,
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.only(bottom: 70.0),
+          child: FloatingActionButton(
+          
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CreatePostScreen()),
+              );
+            },
+            backgroundColor: Colors.purple,
+            child: const Icon(Icons.add, color: Colors.white),
+          ),
+        ),
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.white,
@@ -33,21 +50,7 @@ class Home extends StatelessWidget {
             ),
           ],
         ),
-        body: buildBody(),
-      ),
-      
-    );
-  }
-  Widget buildBody() {
-    return Container(
-      child: Column(
-        children: [
-           Text(
-              "Home Screen",
-              style: TextStyle(color: Colors.black, fontSize: 22),
-            ),
-          
-        ],
+        body: FeedsLayout(),
       ),
     );
   }
