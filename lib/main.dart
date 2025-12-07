@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lokee/pages/loginScreen.dart';
 import 'package:lokee/pages/main_navigation.dart';
+import 'package:lokee/pages/signupScree.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +16,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const MainNavigation(),
+      // home: const MainNavigation(),
+     home: SignupScreen(),    
     );
   }
 }
